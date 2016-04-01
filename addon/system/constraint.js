@@ -81,9 +81,9 @@ function slideHorizontally(guidelines, boundary, target, popover, pointer) {
 
   // Adjust the popover so it remains in view
   if (left < boundary.left + padding) {
-    left = boundary.left + padding;
+    left = Math.min(boundary.left + padding, boundary.right - popover.width);
   } else if (right > boundary.right - padding) {
-    left = boundary.right - popover.width - padding;
+    left = Math.max(boundary.right - popover.width - padding, boundary.left);
   }
 
   var valid = left >= minX && left <= maxX;
