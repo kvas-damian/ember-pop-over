@@ -134,10 +134,10 @@ function slideVertically(guidelines, boundary, target, popover, pointer) {
   var padding = pointer.height;
 
   // Adjust the popover so it remains in view
-  if (top < boundary.top + padding) {
-    top = boundary.top + padding;
-  } else if (bottom > boundary.bottom - padding) {
-    top = boundary.bottom - popover.height - padding;
+  if (left < boundary.left + padding) {
+    left = Math.min(boundary.left + padding, boundary.right - popover.width);
+  } else if (right > boundary.right - padding) {
+    left = Math.max(boundary.right - popover.width - padding, boundary.left);
   }
 
   var valid = top >= minY && top <= maxY;
