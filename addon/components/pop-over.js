@@ -22,7 +22,6 @@ const filterBy = Ember.computed.filterBy;
 const addObserver = Ember.addObserver;
 const removeObserver = Ember.removeObserver;
 
-const isSimpleClick = Ember.ViewUtils.isSimpleClick;
 const $ = Ember.$;
 const integrates = function (key) {
   return computed({
@@ -177,8 +176,7 @@ export default Ember.Component.extend({
     set(this, 'pressed', false);
     var targets = get(this, 'targets');
     var element = get(this, 'element');
-    var clicked = isSimpleClick(evt) &&
-      (evt.target === element || $.contains(element, evt.target));
+    var clicked = (evt.target === element || $.contains(element, evt.target));
     var clickedAnyTarget = targets.any(function (target) {
       return target.isClicked(evt);
     });
