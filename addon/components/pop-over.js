@@ -63,6 +63,8 @@ export default Ember.Component.extend({
 
   flow: 'around',
 
+  windowEventsInitialized: false,
+
   /**
     The target element of the pop over.
     Can be a view, id, or element.
@@ -108,16 +110,23 @@ export default Ember.Component.extend({
   // Event management
   //
 
-  attachWindowEvents: on('didInsertElement', function () {
+  attachObservers: on('didInsertElement', function () {
     this.retile();
 
-    var retile = this.__retile = bind(this, 'retile');
-    ['scroll', 'resize'].forEach(function (event) {
-      $(window).on(event, retile);
-    });
+    this.__retile = bind(this, 'retile');
 
     addObserver(this, 'active', this, 'retile');
   }),
+
+  attachWindowEvents() {
+    if (!this.windowEventsInitialized) {
+      var retile = this.__retile;
+      ['scroll', 'resize'].forEach(function (event) {
+        $(window).on(event, retile);
+      });
+      this.windowEventsInitialized = true;
+    }
+  },
 
   attachTargets: on('didInsertElement', function () {
     // Add implicit target
@@ -148,6 +157,14 @@ export default Ember.Component.extend({
     removeObserver(this, 'active', this, 'retile');
     this.__retile = null;
   }),
+
+  removeWindowEvents: function() {
+    var retile = this.__retile;
+    ['scroll', 'resize'].forEach(function (event) {
+      $(window).off(event, retile);
+    });
+    this.windowEventsInitialized = false;
+  },
 
   mouseEnter() {
     if (get(this, 'disabled')) { return; }
@@ -246,11 +263,13 @@ export default Ember.Component.extend({
   hide() {
     if (this.isDestroyed) { return; }
     set(this, 'active', false);
+    this.removeWindowEvents();
   },
 
   show() {
     if (this.isDestroyed) { return; }
     set(this, 'active', true);
+    this.attachWindowEvents();
   },
 
   retile() {
