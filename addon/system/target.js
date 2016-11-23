@@ -258,7 +258,6 @@ var Target = Ember.Object.extend(Ember.Evented, {
     }
 
     var element = this.element;
-    var $element = $(element);
     var active = !get(this, 'active');
     set(this, 'pressed', active);
 
@@ -267,12 +266,12 @@ var Target = Ember.Object.extend(Ember.Evented, {
 
       var eventManager = this.eventManager;
       eventManager.mouseup = bind(this, 'mouseUp');
-      $element.on('mouseup touchend', eventManager.mouseup);
+      $(document).on('mouseup touchend', eventManager.mouseup);
 
       evt.preventDefault();
     }
 
-    $element.focus();
+    $(element).focus();
     if (evt.type === 'touchstart') {
       // don't allow touch devices to trigger mouseDown
       evt.stopPropagation();
@@ -282,12 +281,9 @@ var Target = Ember.Object.extend(Ember.Evented, {
   }),
 
   mouseUp: function (evt) {
-    var element = this.element;
-    var $element = $(element);
-
     // Remove mouseup event
     var eventManager = this.eventManager;
-    $element.off('mouseup touchend', eventManager.mouseup);
+    $(document).off('mouseup touchend', eventManager.mouseup);
     eventManager.mouseup = null;
 
     var label = labelForEvent(evt);
