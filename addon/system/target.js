@@ -123,7 +123,6 @@ var Target = Ember.Object.extend(Ember.Evented, {
   attach: function () {
     var element = getElementForTarget(this.target);
     var $element = $(element);
-    var $document = $(document);
 
     // Already attached or awaiting an element to exist
     if (get(this, 'attached') || element == null) { return; }
@@ -140,13 +139,13 @@ var Target = Ember.Object.extend(Ember.Evented, {
     var eventManager = this.eventManager;
 
     keys(eventManager).forEach(function (event) {
-      $document.on(event, `#${id}`, eventManager[event]);
+      $element.on(event, eventManager[event]);
     });
 
     var selector = getLabelSelector($element);
     if (selector) {
       keys(eventManager).forEach(function (event) {
-        $document.on(event, selector, eventManager[event]);
+        $(selector).on(event, eventManager[event]);
       });
     }
   },
@@ -154,19 +153,18 @@ var Target = Ember.Object.extend(Ember.Evented, {
   detach: function () {
     var element = this.element;
     var $element = $(element);
-    var $document = $(document);
 
     var eventManager = this.eventManager;
 
     var id = $element.attr('id');
     keys(eventManager).forEach(function (event) {
-      $document.off(event, '#' + id, eventManager[event]);
+      $element.off(event, eventManager[event]);
     });
 
     var selector = getLabelSelector($element);
     if (selector) {
       keys(eventManager).forEach(function (event) {
-        $document.off(event, selector, eventManager[event]);
+        $(selector).off(event, eventManager[event]);
       });
     }
 
@@ -274,6 +272,11 @@ var Target = Ember.Object.extend(Ember.Evented, {
     }
 
     $(element).focus();
+    if (evt.type === 'touchstart') {
+      // don't allow touch devices to trigger mouseDown
+      evt.stopPropagation();
+      evt.preventDefault();
+    }
     return true;
   }),
 
