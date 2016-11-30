@@ -73,6 +73,12 @@ export default Ember.Component.extend({
 
   on: null,
 
+  /**
+   * Attaching events to document instead of attaching them directly to elements
+   * It's better to leave it set to false for better performance
+   */
+  attachToDocument: false,
+
   addTarget(target, options) {
     get(this, 'targets').pushObject(Target.create(options, {
       component: this,
@@ -132,7 +138,8 @@ export default Ember.Component.extend({
     // Add implicit target
     if (get(this, 'for') && get(this, 'on')) {
       this.addTarget(get(this, 'for'), {
-        on: get(this, 'on')
+        on: get(this, 'on'),
+        attachToDocument: get(this, 'attachToDocument')
       });
     }
 
